@@ -9,6 +9,7 @@
   "license": "MIT",
   "main": "./src/transform.js",
   "dependencies": {
-    "@frctl/support": "^2.0.0-beta.0"
+    "@frctl/support": "^2.0.0-beta.0",
+    "@frctl/utils": "^2.0.0-beta.0"
   }
 }
