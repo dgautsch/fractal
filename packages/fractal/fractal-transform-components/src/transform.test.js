@@ -5,7 +5,11 @@ const componentTransform = require('./transform');
 
 const items = [{
   cwd: '/',
-  path: 'path/to/fake/@a-component'
+  path: 'path/to/fake/@a-component',
+  stat: {
+    isNull: () => true,
+    isDirectory: () => true
+  }
 },
 {
   cwd: '/',
@@ -19,7 +23,11 @@ const items = [{
 },
 {
   cwd: '/',
-  path: 'path/to/fake/@b-component/'
+  path: 'path/to/fake/@b-component/',
+  stat: {
+    isNull: () => true,
+    isDirectory: () => true
+  }
 },
 {
   cwd: '/',
@@ -38,13 +46,11 @@ const items = [{
 }
 ];
 
-const getFileCollection = ()=> {
+const getFileCollection = () => {
   return FileCollection.from(items.map(item => File.from(item)));
-}
+};
 
-
-
-describe.only('Component Transform', function () {
+describe('Component Transform', function () {
   describe('factory', function () {
     it('is exported as a function', function () {
       expect(componentTransform).to.be.a('function');
@@ -58,30 +64,12 @@ describe.only('Component Transform', function () {
     });
   });
   describe('.transform()', function () {
-    // before(function () {
-    //   mockFs({
-    //     'path/to/fake/@a-component': {
-    //       'some-file.txt': 'file content here',
-    //       'empty-dir': { /** empty directory */ }
-    //     },
-    //     'path/to/fake/some.png': new Buffer([8, 6, 7, 5, 3, 0, 9]),
-    //     'path/to/fake/other/different/@b-component': {
-    //       'other-file.txt': 'file content here',
-    //       'other-dir': { /** empty directory */ }
-    //     }
-    //   });
-    // });
-    //
-    // after(function () {
-    //   mockFs.restore();
-    // });
-
     it('transforms a FileCollection into a ComponentCollection', function () {
       const fileCollection = getFileCollection();
       const transform = componentTransform().transform;
       const output = transform(fileCollection);
       expect(output instanceof ComponentCollection).to.be.true;
-      expect(output).to.have.property('length').that.equals(4);
+      expect(output).to.have.property('length').that.equals(2);
     });
   });
 });

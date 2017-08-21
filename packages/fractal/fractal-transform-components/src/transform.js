@@ -1,5 +1,5 @@
 const {normalizeName, addTrailingSeparator} = require('@frctl/utils');
-const {Component, ComponentCollection} = require('@frctl/support');
+const {Component, Collection, ComponentCollection, FileCollection} = require('@frctl/support');
 
 module.exports = function (opts = {}) {
   const marker = opts.marker || '@';
@@ -9,29 +9,24 @@ module.exports = function (opts = {}) {
     name: 'components',
 
     transform(files, state) {
-      console.log(files);
       const components = files.toArray().filter(file => {
-        console.log(file.isDirectory(), file.stem)
         return file.isDirectory() && file.stem.startsWith(marker);
       });
 
-      console.log(components);
-
       return ComponentCollection.from(components.map(dir => {
-        const componentFiles = matchComponentFiles(dir, files).map(file => {
+        const componentFiles = FileCollection.from(matchComponentFiles(dir, files, marker).map(file => {
           file = file.clone();
           file.base = dir.path;
           return file;
-        });
+        }));
 
         return Component.from({
           path: dir.path,
           relative: dir.relative,
-          src: dir.base,
+          src: dir,
           name: normalizeName(dir.stem),
-          role: 'component',
           config: {},
-          variants: [],
+          variants: new Collection(),
           files: componentFiles
         });
       }));
@@ -39,7 +34,7 @@ module.exports = function (opts = {}) {
   };
 };
 
-function matchComponentFiles(dir, files) {
+function matchComponentFiles(dir, files, marker) {
   const rootPath = addTrailingSeparator(dir.path);
   return files.filter(file => {
     return !file.isDirectory() && // is not a directory
